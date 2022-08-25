@@ -5,6 +5,21 @@ const  {
 } = require('apollo-server-core');
 const express = require('express');
 const http = require('http');
+const mongoose = require('mongoose')
+// Connect to MongooseDb
+
+const connectDB = async () => {
+	try {
+		await mongoose.connect('mongodb+srv://handez:1234@cluster0.u2jq8ul.mongodb.net/?retryWrites=true&w=majority')
+
+		console.log('MongoDB connected')
+	} catch (error) {
+		console.log(error.message)
+		process.exit(1)
+	}
+}
+
+connectDB()
 
 async function startApolloServer(typeDefs, resolvers) {
   const app = express();
@@ -25,6 +40,8 @@ async function startApolloServer(typeDefs, resolvers) {
   await new Promise(resolve => httpServer.listen({ port: 4000 }, resolve));
   console.log(`🚀 Server ready at http://localhost:4000${server.graphqlPath}`);
 }
+// Load schema & resolvers
 const typeDefs = require('./schema/schema');
 const resolvers = require('./resolver/resolver');
+const { log } = require('console');
 startApolloServer(typeDefs,resolvers)
