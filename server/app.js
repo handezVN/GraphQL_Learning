@@ -21,12 +21,18 @@ const connectDB = async () => {
 
 connectDB()
 
-async function startApolloServer(typeDefs, resolvers) {
+// load db methods
+const mongoDataMethods = require('./data/db');
+
+async function startApolloServer(typeDefs, resolvers , mongoMethods) {
   const app = express();
   const httpServer = http.createServer(app);
   const server = new ApolloServer({
     typeDefs,
     resolvers,
+    context:() => ({
+      mongoMethods
+    }),
     csrfPrevention: true,
     cache: 'bounded',
     plugins: [
@@ -43,5 +49,4 @@ async function startApolloServer(typeDefs, resolvers) {
 // Load schema & resolvers
 const typeDefs = require('./schema/schema');
 const resolvers = require('./resolver/resolver');
-const { log } = require('console');
-startApolloServer(typeDefs,resolvers)
+startApolloServer(typeDefs,resolvers,mongoDataMethods)
