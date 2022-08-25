@@ -39,7 +39,20 @@ const resolvers = {
             const data =  await context.mongoMethods.createBook(args)
             pubsub.publish("NEWBOOK", { newBook: data  });
             return data
+        },
+        deleteBook:async (parent,args,context)=>{
+            const result = await context.mongoMethods.deleteBook(args.id)
+            console.log(result);
+            const msg = "Success";
+            return msg
+        },
+        deleteAuthor:async (parent,args,context)=>{
+            const result = await context.mongoMethods.deleteAuthor(args.id)
+            console.log(result);
+            const msg = "Success";
+            return msg
         }
+        
     },
     Subscription: {
         newBook: {

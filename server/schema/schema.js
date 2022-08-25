@@ -23,7 +23,8 @@ type Query{
 type Mutation{
     createAuthor(name:String, age:Int ) : Author,
     createBook( name:String, genre:String, authorId:ID!): Book,  
-    deleteBook(id: ID!): String
+    deleteBook(id: ID!): String,
+    deleteAuthor(id: ID!): String
 }
 type Subscription {
     newBook: Book 
