@@ -1,9 +1,9 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import Form from 'react-bootstrap/Form'
 import Button from 'react-bootstrap/Button'
-
+import { useSubscription } from '@apollo/client'
 import { useQuery, useMutation } from '@apollo/client'
-import { getAuthors, getBooks } from '../graphql-client/queries'
+import { getAuthors, getBooks , ADDNEWAUTHOR_SUBSCRIPTION } from '../graphql-client/queries'
 import { addSingleBook } from '../graphql-client/mutations'
 
 const BookForm = () => {
@@ -27,7 +27,6 @@ const BookForm = () => {
 		console.log('test deploy')
 		addBook({
 			variables: { name, genre, authorId },
-			refetchQueries: [{ query: getBooks }]
 		})
 
 		setNewBook({ name: '', genre: '', authorId: '' })
@@ -37,7 +36,18 @@ const BookForm = () => {
 	const { loading, error, data } = useQuery(getAuthors)
 
 	const [addBook, dataMutation] = useMutation(addSingleBook)
-
+	const [authors,setListAuthors] = useState([]);
+	useEffect(()=>{
+		if(data){
+			setListAuthors(data.authors)
+		}
+	},[data])
+	
+	const {newAuthor , isLoading} = useSubscription(ADDNEWAUTHOR_SUBSCRIPTION,{
+		onSubscriptionData: (item) =>{
+			setListAuthors([...authors,item.subscriptionData.data.newAuthor])
+		}
+	})
 	// console.log(dataMutation)
 
 	return (
@@ -76,7 +86,7 @@ const BookForm = () => {
 						<option value='' disabled>
 							Select author
 						</option>
-						{data.authors.map(author => (
+						{authors.map(author => (
 							<option key={author.id} value={author.id}>
 								{author.name}
 							</option>

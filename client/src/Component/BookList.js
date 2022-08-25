@@ -1,26 +1,37 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import Card from 'react-bootstrap/Card'
 import CardColumns from 'react-bootstrap/CardColumns'
 import Row from 'react-bootstrap/Row'
 import Col from 'react-bootstrap/Col'
 import BookDetails from './BookDetails'
-
+import { useSubscription } from '@apollo/client'
 import { useQuery } from '@apollo/client'
-import { getBooks } from '../graphql-client/queries'
+import * as queries from '../graphql-client/queries'
 
 const BookList = () => {
 	const [bookSelected, setBookSelected] = useState(null)
-
-	const { loading, error, data } = useQuery(getBooks)
-
+	const {newBook , isLoading} = useSubscription(queries.ADDNEWBOOK_SUBSCRIPTION,{
+		onSubscriptionData: (item) =>{
+			setBooks([...listbooks,item.subscriptionData.data.newBook])
+		}
+	})
+	
+	const [listbooks,setBooks] = useState([]);
+	const { loading, error, data } = useQuery(queries.getBooks)
+	useEffect(()=>{
+		if(data){
+			setBooks(data.books)
+		}
+	},[data])
+	
 	if (loading) return <p>Loading books....</p>
 	if (error) return <p>Error loading books!</p>
-
+	
 	return (
 		<Row>
 			<Col xs={8}>
 				<CardColumns>
-					{data.books.map(book => (
+					{listbooks.map(book => (
 						<Card
 							border='info'
 							text='info'

@@ -1,7 +1,8 @@
 const {books, authors} = require('../data/statics');
 const Author = require('../models/Author')
 const Book = require('../models/Book')
-
+const { PubSub } = require("graphql-subscriptions");
+const pubsub = new PubSub();
 const resolvers = { 
     // Query
     Query: {
@@ -30,11 +31,24 @@ const resolvers = {
     // Mutation
     Mutation:{
         createAuthor: async(parent,args,context)=> {
-           return await context.mongoMethods.createAuthor(args)
+            const data =  await context.mongoMethods.createAuthor(args)
+            pubsub.publish("NEWAUTHOR", { newAuthor: data  });
+           return data
         },
         createBook:async (parent,args,context)=>{
-            return await context.mongoMethods.createBook(args)
+            const data =  await context.mongoMethods.createBook(args)
+            pubsub.publish("NEWBOOK", { newBook: data  });
+            return data
         }
-    }
+    },
+    Subscription: {
+        newBook: {
+          subscribe: () => pubsub.asyncIterator(["NEWBOOK"]),
+        },
+        newAuthor:{
+            subscribe: () => pubsub.asyncIterator(["NEWAUTHOR"]),
+        }
+      },
+    
 }
 module.exports = resolvers

@@ -27,7 +27,7 @@ const AuthorForm = () => {
 
 		addAuthor({
 			variables: { name, age: parseInt(age) },
-			refetchQueries: [{ query: getAuthors }]
+			
 		})
 
 		setNewAuthor({ name: '', age: '' })
