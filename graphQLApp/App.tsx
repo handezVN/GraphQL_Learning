@@ -1,19 +1,19 @@
-import Container from 'react-bootstrap/Container'
-import BookList from './Component/BookList'
-import Forms from './Component/Forms'
-
-import { ApolloClient, InMemoryCache, ApolloProvider } from '@apollo/client'
+import { StatusBar } from 'expo-status-bar';
+import { StyleSheet, Text, View } from 'react-native';
+import { ApolloClient, InMemoryCache, ApolloProvider} from '@apollo/client'
 import { split, HttpLink } from '@apollo/client';
 import { getMainDefinition } from '@apollo/client/utilities';
 import { GraphQLWsLink } from '@apollo/client/link/subscriptions';
 import { createClient } from 'graphql-ws';
-
+import { useEffect, useState } from 'react';
+import { AppRegistry } from 'react-native';
+import Book from './Component/book';
 const httpLink = new HttpLink({
-  uri: 'http://localhost:4000/graphql'
+  uri: 'https://115f-116-108-0-84.ap.ngrok.io/graphql'
 });
 
 const wsLink = new GraphQLWsLink(createClient({
-  url: 'ws://localhost:4000/graphql',
+  url: 'ws://115f-116-108-0-84.ap.ngrok.io/graphql',
 }));
 
 // The split function takes three parameters:
@@ -36,19 +36,25 @@ const client = new ApolloClient({
 	link: splitLink,
 	cache: new InMemoryCache()
 })
-function App() {
-	console.log("Client",client);
-	return (
-		<ApolloProvider client={client} >
-			<Container className='py-3 mt-3' style={{ backgroundColor: 'lightcyan' }}>
-				<h1 className='text-center text-info mb-3'>My Books</h1>
-				<hr />
-				<Forms />
-				<hr />
-				<BookList />
-			</Container>
-		</ApolloProvider>
-	)
+
+
+export default function App() {
+  
+  return (
+    <ApolloProvider client={client} >
+      <View style={styles.container}>
+        <Book></Book>
+        <StatusBar style="auto" />
+      </View>
+    </ApolloProvider>
+  );
 }
 
-export default App
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#fff',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+});

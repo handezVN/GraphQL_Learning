@@ -10,9 +10,10 @@ import * as queries from '../graphql-client/queries'
 
 const BookList = () => {
 	const [bookSelected, setBookSelected] = useState(null)
-	const {newBook , isLoading} = useSubscription(queries.ADDNEWBOOK_SUBSCRIPTION,{
+	useSubscription(queries.ADDNEWBOOK_SUBSCRIPTION,{
 		onSubscriptionData: (item) =>{
 			setBooks([...listbooks,item.subscriptionData.data.newBook])
+			console.log(item);
 		}
 	})
 	
